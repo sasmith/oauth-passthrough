@@ -7,5 +7,4 @@ I want to write an [Alexa skill](https://developer.amazon.com/public/solutions/a
 Even better, these OAuth tokens will be stored by Amazon, and the integration will only have access to them when the Alexa skill is invoked. And the tokens can be encrypted to protect against the unfortunate situation where Amazon's token store is breached.
 
 ## Deployment
-### The Lambda function
 Create an [AWS Lambda](https://aws.amazon.com/lambda/) function with code `lambda.py`. The `REDIRECT_URI` and `CLIENT_ID` should be filled in manually to match the OAuth client you want to serve. Then fill your AWS account id into `create_api_gateway.py` and run it. This will create an [API Gateway](https://aws.amazon.com/api-gateway/) to match your lambda function, resulting in your lambda function basically being a webserver. Note that you'll still need to deploy the API Gateway after testing that it works as expected.
