@@ -1,13 +1,15 @@
+import base64
 import cgi
 import json
 import urllib
 
-# TODO: encrypt the username and password
 # TODO: mention http://www-cs-students.stanford.edu/~tjw/jsbn
-# import Crypto
+from Crypto.Cipher import PKCS1_OAEP
+from Crypto.PublicKey import RSA
 
-REDIRECT_URI = "Redirect URI for the OAuth client"
 CLIENT_ID = "Client Id"
+KEY_FILENAME = "oauth_passthrough.key.pub"
+REDIRECT_URI = "Redirect URI for the OAuth client"
 
 class RedirectException(Exception):
     pass
@@ -75,7 +77,7 @@ class EventHandler(object):
             state=cgi.escape(self.state)
         )
 
-    def redirect(self):
+    def redirect(self, encryption_key):
         """Throws an exception that indicates we should redirect.
 
         This is built to work around AWS' API Gateway's limitations. We want to
@@ -97,11 +99,16 @@ class EventHandler(object):
         want.
         """
         # TODO: make sure email and password aren't url encoded.
+        cipher = PKCS1_OAEP.new(encryption_key)
         token = json.dumps({"email": self.email, "password": self.password})
+        encrypted_token = cipher.encrypt(token)
+        # url encoding can handle the encrypted token, but b64 encoding it makes
+        # it short and arguably nicer to read
+        encoded_encrypted_token = base64.b64encode(encrypted_token)
         fragment = urllib.urlencode({
             "state": self.state,
             "token_type": "bearer",
-            "access_token": token
+            "access_token": encoded_encrypted_token
         })
         url = REDIRECT_URI + "#" + fragment
         raise RedirectException(url)
@@ -119,7 +126,8 @@ def main(event, context):
     email = event["email"]
     password = event["password"]
     if validate_email_and_password(email, password):
+        key = RSA.importKey(open(KEY_FILENAME).read())
         # This actually raises, but we leave the return statement since the
         # raise is acting like a return.
-        return handler.redirect()
+        return handler.redirect(key)
     return handler.request_password_page(error=None)

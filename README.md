@@ -7,4 +7,27 @@ I want to write an [Alexa skill](https://developer.amazon.com/public/solutions/a
 Even better, these OAuth tokens will be stored by Amazon, and the integration will only have access to them when the Alexa skill is invoked. And the tokens can be encrypted to protect against the unfortunate situation where Amazon's token store is breached.
 
 ## Deployment
-Create an [AWS Lambda](https://aws.amazon.com/lambda/) function with code `lambda.py`. The `REDIRECT_URI` and `CLIENT_ID` should be filled in manually to match the OAuth client you want to serve. Then fill your AWS account id into `create_api_gateway.py` and run it. This will create an [API Gateway](https://aws.amazon.com/api-gateway/) to match your lambda function, resulting in your lambda function basically being a webserver. Note that you'll still need to deploy the API Gateway after testing that it works as expected.
+### Lambda function
+From the oauth-passthrough directory:
+
+* Install [PyCrypto](https://github.com/dlitz/pycrypto) to your local checkout of this code. PyCrypto contains compiled modules, so you'll need to get a version that's been compiled in an AWS version of Linux. Since PyCrypto is already installed on in AWS Linux, the easiest way to do this is just to spin up a small EC2 instance and run
+```
+rsync -r ec2-user@YOUR_EC2_INSTANCE_IP:/usr/lib64/python2.7/dist-packages/Crypto .
+```
+* Create a new public / private keypair to use with oauth-passthrough
+```
+ssh-keygen -N "" -f oauth_passthrough.key
+```
+* Edit `oauth_passthrough.py` to update `REDIRECT_URI` and `CLIENT_ID` to match the OAuth client you want to serve.
+* Zip `oauth_passthrough.py` and all its requirements
+```
+zip -r oauth_passthrough oauth_passthrough.py oauth_passthrough.key.pub Crypto
+```
+or to slim down the zipfile
+```
+zip oauth_passthrough oauth_passthrough.py oauth_passthrough.key.pub `find Crypto | grep -v pyc$ | grep -v SelfTest`
+```
+* Create an [AWS Lambda](https://aws.amazon.com/lambda/) function with the resulting `oauth_passthrough.zip`. If you name this something other than "OAuthPassthrough", you should update `create_api_gateway.py` with the new function name.
+
+### API Gateway
+Fill your AWS account id into `create_api_gateway.py` and run it. This will create an [API Gateway](https://aws.amazon.com/api-gateway/) to match your lambda function, resulting in your lambda function basically being a webserver. Note that you'll still need to deploy the API Gateway after testing that it works as expected. Once deployed, this will provide you with an endpoint that you can provide to your OAuth client.
