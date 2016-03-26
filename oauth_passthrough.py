@@ -113,7 +113,7 @@ class EventHandler(object):
         url = REDIRECT_URI + "#" + fragment
         raise RedirectException(url)
 
-def validate_email_and_password(emal, password):
+def validate_email_and_password(email, password):
     # TODO: Add actual validation
     return True
 
