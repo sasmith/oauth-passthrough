@@ -93,12 +93,12 @@ def add_get_integration(boto_client, api_id):
         integrationHttpMethod="POST",
         requestTemplates={
             "application/json": json.dumps({
-                  "method": "GET",
-                  "client_id": "$input.params('client_id')",
-                  "redirect_uri": "$input.params('redirect_uri')",
-                  "response_type": "$input.params('response_type')",
-                  "scope": "$input.params('scope')",
-                  "state": "$input.params('state')"
+                "method": "GET",
+                "client_id": "$input.params('client_id')",
+                "redirect_uri": "$input.params('redirect_uri')",
+                "response_type": "$input.params('response_type')",
+                "scope": "$input.params('scope')",
+                "state": "$input.params('state')"
             })
         }
     )
@@ -144,14 +144,14 @@ def add_post_integration(boto_client, api_id):
         integrationHttpMethod="POST",
         requestTemplates={
             "application/x-www-form-urlencoded": json.dumps({
-                  "method": "POST",
-                  "client_id": "$input.params('client_id')",
-                  "email": "$input.params('email')",
-                  "password": "$input.params('password')",
-                  "redirect_uri": "$input.params('redirect_uri')",
-                  "response_type": "$input.params('response_type')",
-                  "scope": "$input.params('scope')",
-                  "state": "$input.params('state')"
+                "method": "POST",
+                "client_id": "$input.params('client_id')",
+                "email": "$input.params('email')",
+                "password": "$input.params('password')",
+                "redirect_uri": "$input.params('redirect_uri')",
+                "response_type": "$input.params('response_type')",
+                "scope": "$input.params('scope')",
+                "state": "$input.params('state')"
             })
         }
     )
