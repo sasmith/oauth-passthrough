@@ -7,7 +7,7 @@ import urllib
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.PublicKey import RSA
 
-CLIENT_ID = "Client Id"
+CLIENT_ID = "alexa-skill"
 KEY_FILENAME = "oauth_passthrough.key.pub"
 REDIRECT_URI = "Redirect URI for the OAuth client"
 
