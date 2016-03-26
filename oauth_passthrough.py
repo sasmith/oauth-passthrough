@@ -54,7 +54,7 @@ class EventHandler(object):
     <title>title</title>
   </head>
   <body>
-    <form method="post">
+    <form>
       Email Address:<br>
       <input id="email" type="email" name="email" value="{email}"><br>
       Password:<br>
@@ -120,11 +120,8 @@ def validate_email_and_password(email, password):
 def main(event, context):
     assert_event_okay(event)
     handler = EventHandler(event)
-    if event["method"] == "GET":
-        return handler.request_password_page()
-    assert event["method"] == "POST"
-    email = event["email"]
-    password = event["password"]
+    email = event.get("email", "")
+    password = event.get("password", "")
     if validate_email_and_password(email, password):
         key = RSA.importKey(open(KEY_FILENAME).read())
         # This actually raises, but we leave the return statement since the

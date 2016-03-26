@@ -61,7 +61,7 @@ class ResourceBuilder(object):
             **kwargs
         )
 
-def add_get_integration(boto_client, api_id):
+def add_integration(boto_client, api_id):
     resource_builder = ResourceBuilder(
         boto_client,
         api_id,
@@ -93,58 +93,6 @@ def add_get_integration(boto_client, api_id):
         integrationHttpMethod="POST",
         requestTemplates={
             "application/json": json.dumps({
-                "method": "GET",
-                "client_id": "$input.params('client_id')",
-                "redirect_uri": "$input.params('redirect_uri')",
-                "response_type": "$input.params('response_type')",
-                "scope": "$input.params('scope')",
-                "state": "$input.params('state')"
-            })
-        }
-    )
-
-    resource_builder.put_method_response(
-        statusCode="200",
-        responseModels={
-            "text/html": "Empty"
-        }
-    )
-
-    resource_builder.put_integration_response(
-        statusCode="200",
-        selectionPattern="",
-        responseTemplates={
-            # TODO: Just $input.path('$')?
-            "application/json": "#set($inputRoot = $input.path('$'))\n$inputRoot"
-        }
-    )
-
-def add_post_integration(boto_client, api_id):
-    resource_builder = ResourceBuilder(
-        boto_client,
-        api_id,
-        root_id(boto_client, api_id),
-        "POST"
-    )
-    resource_builder.put_method(
-        authorizationType="NONE"
-    )
-    uri = (
-        "arn:aws:apigateway:{api_region_name}:lambda:path/2015-03-31/functions/"
-        "arn:aws:lambda:{lambda_region_name}:{account_id}:function:{lambda_function_name}/invocations"
-    ).format(
-        api_region_name=API_REGION_NAME,
-        lambda_region_name=LAMBDA_REGION_NAME,
-        account_id=ACCOUNT_ID,
-        lambda_function_name=LAMBDA_FUNCTION_NAME
-    )
-    resource_builder.put_integration(
-        type="AWS",
-        uri=uri,
-        integrationHttpMethod="POST",
-        requestTemplates={
-            "application/x-www-form-urlencoded": json.dumps({
-                "method": "POST",
                 "client_id": "$input.params('client_id')",
                 "email": "$input.params('email')",
                 "password": "$input.params('password')",
@@ -162,6 +110,16 @@ def add_post_integration(boto_client, api_id):
             "text/html": "Empty"
         }
     )
+
+    resource_builder.put_integration_response(
+        statusCode="200",
+        selectionPattern="",
+        responseTemplates={
+            # TODO: Just $input.path('$')?
+            "application/json": "#set($inputRoot = $input.path('$'))\n$inputRoot"
+        }
+    )
+
     resource_builder.put_method_response(
         statusCode="302",
         responseParameters={
@@ -172,14 +130,6 @@ def add_post_integration(boto_client, api_id):
         }
     )
 
-    resource_builder.put_integration_response(
-        statusCode="200",
-        selectionPattern="",
-        responseTemplates={
-            # TODO: Just $input.path('$')?
-            "application/json": "#set($inputRoot = $input.path('$'))\n$inputRoot"
-        }
-    )
     resource_builder.put_integration_response(
         statusCode="302",
         selectionPattern="http.*",
@@ -202,8 +152,7 @@ def give_permission_to_call_lambda(boto_lambda_client, api_id):
 if __name__ == "__main__":
     boto_api_client = boto3.client("apigateway", region_name=API_REGION_NAME)
     api_id = create_api(boto_api_client, API_NAME)
-    add_get_integration(boto_api_client, api_id)
-    add_post_integration(boto_api_client, api_id)
+    add_integration(boto_api_client, api_id)
 
     boto_lambda_client = boto3.client("lambda", region_name=LAMBDA_REGION_NAME)
     give_permission_to_call_lambda(boto_lambda_client, api_id)
