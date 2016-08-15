@@ -2,7 +2,7 @@
 Allows username and password information to be passed through oauth tokens.
 
 ## Why would you want this?
-I want to write an [Alexa skill](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/developing-an-alexa-skill-as-a-lambda-function) for [Baby Tracker](http://nighp.com/babytracker). This requires me to be able to link the Alexa user to the Baby Tracker user. But the former only allows linking via OAuth while the latter only allows authorization via username and email. This project provides an OAuth endpoint that will take a username (email) and password from a user and return that as the OAuth token, which will allow me to effectively link the two accounts.
+I want to write an [Alexa skill](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/developing-an-alexa-skill-as-a-lambda-function) for [Baby Tracker](http://nighp.com/babytracker). This requires me to be able to link the Alexa user to the Baby Tracker user. But the former only allows linking via OAuth while the latter only allows authorization via username and password. This project provides an OAuth endpoint that will take a username (email) and password from a user and return that as the OAuth token, which will allow me to effectively link the two accounts.
 
 Even better, these OAuth tokens will be stored by Amazon, and the integration will only have access to them when the Alexa skill is invoked. And the tokens can be encrypted to protect against the unfortunate situation where Amazon's token store is breached.
 
